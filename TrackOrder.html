@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>BOOK-MY-HSRP</title>
+    <meta name="Keywords" />
+    <meta name="Description" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="msapplication-navbutton-color" content="#000000" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="#000000" />
+    <link rel="shortcut icon" href="assets/img/fav.png" />
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="assets/css/bootstrap-datepicker3.min.css" />
+    <link rel="stylesheet" href="assets/css/owl.carousel.min.css" />
+    <link rel="stylesheet" href="assets/css/loading.css" />
+    <link rel="stylesheet" href="assets/css/app64e5.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="assets/js/BMHSRP.js"></script>
+
+    <style>
+        .addwrapper {padding: 0 10px;}
+        .footerLink li a{font-weight:bold;color: inherit;}
+        .header-logos .logo1 {width: 130px;margin-top:5px;}
+        .header-logos .logo2 {width: 130px;margin-top:5px;}
+        @media (min-width: 320px) and (max-width: 767px){
+            .btn-grp{
+                display: flex;
+                flex-wrap: wrap;
+            }
+            .btn-grp button{
+                padding: 14px !important;
+                flex: 0 0 47%;
+                max-width: 47%;
+                margin-right: 5px;
+            }
+        }
+    </style>
+
+    <script type="text/javascript" language="javascript">
+        function DisableBackButton() {
+            window.history.forward()
+        }
+        DisableBackButton();
+        window.onload = DisableBackButton;
+        window.onpageshow = function (evt) { if (evt.persisted) DisableBackButton() }
+        window.onunload = function () { void (0) }
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            DrawCaptcha();
+
+            $('#txtSearch').click(function () {
+                var Orderno = $("#ContentPlaceHolder1_txtorderno").val();
+                var VehicleNo = $("#ContentPlaceHolder1_txtvehiclereg").val();
+
+                if (Orderno == '' || VehicleNo == '') {
+                    alert("Orderno and VehicleNo should not be Blank");
+                    return false;
+                }
+                if (Orderno.includes("'")) {
+                    alert("Invalid orderno !");
+                    return false;
+                }
+                if (VehicleNo.includes("'")) {
+                    alert("Invalid Vehicle reg no !");
+                    return false;
+                }
+                if (!ValidCaptcha()) return false;
+
+                $.ajax({
+                    type: "GET",
+                    url: "api/Get/TrackOrderNo?orderno=" + Orderno + " &vehicleRegno= " + VehicleNo,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        if (response != '') {
+                            var user = JSON.parse(response);
+                            if (user.ORDER_NUMBER == '' || user.REG_NUMBER == '') { return false; }
+                            var url = "AppointmentStatus.aspx";
+                            window.location.href = url;
+                        }
+                        else {
+                            alert("Data Not Found");
+                        }
+                    },
+                    error: function (response) {
+                        //alert(response.responseText);
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        function DrawCaptcha() {
+            var a = Math.ceil(Math.random() * 10) + '';
+            var b = Math.ceil(Math.random() * 10) + '';
+            var c = Math.ceil(Math.random() * 10) + '';
+            var d = Math.ceil(Math.random() * 10) + '';
+            var code = a + ' ' + b + ' ' + ' ' + c + ' ' + d;
+            document.getElementById("txtCaptcha").value = code
+        }
+
+        function ValidCaptcha() {
+            var str1 = removeSpaces(document.getElementById('txtCaptcha').value);
+            var str2 = removeSpaces(document.getElementById('txtInput').value);
+            if (str2 == '') {
+                alert("Captcha can't be blank!!");
+                return false;
+            }
+            else if (str1 == str2) {
+                return true;
+            }
+            else {
+                alert("Please Input Correct Captcha");
+                return false;
+            }
+        }
+
+        function removeSpaces(string) {
+            return string.split(' ').join('');
+        }
+        function blockSpecialCharforreg(e) {
+            var k;
+            document.all ? k = e.keyCode : k = e.which;
+            return ((k > 64 && k < 91) || (k > 96 && k < 123) || k == 8 || (k >= 48 && k <= 57));
+        }
+    </script>
+    <script type="text/javascript">
+        $(window).on('load', function () {
+            DrawCaptcha();
+        });
+    </script>
+</head>
+<body>
+    <form method="post" action="https://bookmyplates.site/trackorder.php" id="form1">
+        <div class="loader"></div>
+        <div class="section">
+            <script>
+                !function (f, b, e, v, n, t, s) {
+                    if (f.fbq) return; n = f.fbq = function () {
+                        n.callMethod ?
+                            n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+                    };
+                    if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+                    n.queue = []; t = b.createElement(e); t.async = !0;
+                    t.src = v; s = b.getElementsByTagName(e)[0];
+                    s.parentNode.insertBefore(t, s)
+                }(window, document, 'script',
+                    'https://connect.facebook.net/en_US/fbevents.js');
+                fbq('init', '707852008145931');
+                fbq('track', 'PageView');
+            </script>
+            <noscript>
+                <img height="1" width="1" style="display:none"
+                     src="https://www.facebook.com/tr?id=707852008145931&amp;ev=PageView&amp;noscript=1" />
+            </noscript>
+            <style>
+                .ReplacementHeading { -webkit-box-shadow: 10px 9px 21px -8px rgba(0,0,0,0.75); -moz-box-shadow: 10px 9px 21px -8px rgba(0,0,0,0.75); box-shadow: 10px 9px 21px -8px rgba(0,0,0,0.75); border: 1px solid rgba(0,0,0,0.75); font-size: 13.87pt; }
+                .Bar { font-weight: 600; color: #231f20; font-size: 13.87pt; padding: 15px 13px 15px 0px; position: relative; text-align: center; display: table-cell; vertical-align: middle; }
+                .blink_me, .blink_me_rep { animation: blinker 1.5s linear infinite; }
+                @keyframes blinker { 50% { opacity: 0; } }
+            </style>
+            <style>
+                div.logo2 span { display: none; position: absolute; bottom: 0; left: 0; right: 0; background: #333; color: #fff; }
+                div.logo2:hover span { display: table; background-image: url('wow/QR.jpg'); z-index: 550; top: 75px; left: 30%; }
+            </style>
+            <header>
+                <a href="index.html">
+                    <div class="logo font4">BOOK-MY-HSRP<i></i><i></i><i></i><i></i></div>
+                </a>
+                <div class="header-logos">
+                    <div class="logo1" style="border: solid 2px #fff; box-shadow: none;">
+                        <img src="assets/img/rosmerta_hsrp_logo.png">
+                    </div>
+                    <div class="logo2" style="border: solid 2px #fff; box-shadow: none; width: 140px;">
+                        <a href="https://play.google.com/store/apps/details?id=com.raasta" target="_blank">
+                            <img src="assets/img/RB-6.jpg" />
+                        </a>
+                        <span class="tooltiptext">
+                            <img src="wow/QR.jpg">
+                        </span>
+                    </div>
+                </div>
+                <ul class="menu">
+                    <li class="ReplacementHeading" style="display: none"><a class="blink_me_rep" href="Plate/ReplacementBooking-2.html" style="color: #b11b20; font-size: large"><b>Replacement Booking &nbsp</b></a></li>
+                    <li><a href="TrackOrder.html" class="active1"><b>Track Your Order</b></a></li>
+                    <li><a href="ReAppointment.html"><b>Reschedule Appointment</b></a></li>
+                    <li><a href="OrderCancel.html"><b>Cancel Order</b></a></li>
+                    <li><a href="PinForHomeDelivery.html"><b>Check For Home Installation</b></a></li>
+                    <li><a href="ReceiptValidity.html"><b>Receipt Validity</b></a></li>
+                    <li><a href="BookMyHSRP_ContactUs.html"><b>Contact Us</b></a></li>
+                </ul>
+                <div class="menubutton">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </header>
+            <div class="megamenu"></div>
+            <section class="marquee-box" style='display:none;'>
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12" style="font-weight: 600; color: red!important; font-size: 18px!important;">
+                            <marquee behavior="scroll" direction="left" scrollamount="10" onmouseover="this.stop()" onmouseout="this.start()">It has been informed by NIC that the VAHAN server will be down from 11:00 AM to 01:00 PM. Due to this, HSRP order processing will be impacted as Vahan validation will not be done. Once the issue is resolved by the NIC team, order processing will resume. We appreciate your patience and apologise for any inconvenience caused. </marquee>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <div class="row" style="text-align: center;margin-bottom: 4px;display:none">
+                <div class="col-md-12 col-sm-12">
+                    <h3 style="color: #302c2c;font-style: italic;font-weight: 900;"> Download MyRaasta App Now</h3>
+                </div>
+                <div class="col-md-12 col-sm-12">
+                    <a target="_blank" href="https://play.google.com/store/apps/details?id=com.raasta" id="googlePlay">
+                        <img src="assets/img/gplay.png" class="img" style="width: 120px;" />
+                    </a>
+                    <a target="_blank" href="https://apps.apple.com/in/app/raasta-autotech/id1588551229" id="iosPlay">
+                        <img src="assets/img/appstore.png" class="img" style="width: 120px;" />
+                    </a>
+                </div>
+            </div>
+            <div class="app inner-pages check-status-page clearfix color1">
+                <div class="check-status-form addedspace">
+                    <h4>Track Your Order</h4>
+                    <div class="form-data clearfix">
+                        <div class="control">
+                            <label for="orderno">Order number: *</label>
+                            <input name="orderno" type="text" id="ContentPlaceHolder1_txtorderno" autocomplete="off" placeholder="DLHSRP1221XXXXXX" required="" />
+                        </div>
+                        <div class="control">
+                            <label for="vehiclereg">Vehicle Reg No: *</label>
+                            <input name="vehiclereg" type="text" id="ContentPlaceHolder1_txtvehiclereg" autocomplete="off" onkeyup="this.value = this.value.toUpperCase();" onkeypress="return blockSpecialCharforreg(event);" maxlength="10" placeholder="DL01ABXXXX" required="" />
+                        </div>
+                        <div class="control">
+                            <div class="captcha-input rightmargin-xs">
+                                <label for="orderno">Captcha::</label>
+                                <input type="text" name="Captcha" id="txtCaptcha" readonly="readonly" placeholder="Input Captcha" required="" />
+                            </div>
+                            <div class="captcha-img">
+                                <button type="button" id="btnReferesh" onclick="DrawCaptcha();">
+                                    <img src="assets/img/reload-icon.png">
+                                </button>
+                            </div>
+                        </div>
+                        <div class="control">
+                            <div class="captcha-input rightmargin-xs">
+                                <label for="InputCaptcha">Input Captcha: :</label>
+                                <input type="text" autocomplete="off" id="txtInput" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="App clearfix">
+                        <div class="control btn-grp">
+                            <button id="txtSearch">Search</button>
+                            <button id="txtCancel">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer>
+                <ul>
+                    <li><a href="BookMyHSRP_HSRPFAQ.html" style="color:black"><b>FAQ</b></a></li>
+                    <li><a href="BookMyHSRP_privacypolicy.html">Privacy Policy</a></li>
+                    <li><a href="assets/pdf/Refund_cancellationNew.pdf" target="_blank">Refund & Cancellation Policy</a></li>
+                    <li><a href="BookMyHSRP_safe-secure-transaction.html">Safe & Secure Transaction</a></li>
+                    <li><a href="BookMyHSRP_termsofuse.html">Terms & Conditions</a></li>
+                    <li><a href="GovNotification.html">Government Notifications</a></li>
+                    <li><a href="assets/pdf/HSRP_features.pdf" target="_blank">About HSRP</a></li>
+                    <li><a href="GrievanceSelectState.html" style="color:black"><b>Grievance Redressal</b></a></li>
+                    <li><a href="DownloadReceipt.html" style="color:black"><b>Reprint Receipt</b></a></li>
+                </ul>
+                <p class="copyright" style="width:160px;">© 2020 BOOKMYHSRP</p>
+            </footer>
+        </div>
+        <script>
+            jQuery(document).ready(function () {
+                var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+                if (userAgent.match(/iPad/i) || userAgent.match(/iPhone/i) || userAgent.match(/iPod/i)) {
+                    $('#googlePlay').hide();
+                }
+                else if (userAgent.match(/Android/i)) {
+                    $('#iosPlay').hide();
+                }
+            });
+        </script>
+    </form>
+</body>
+</html>
